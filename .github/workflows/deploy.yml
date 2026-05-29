@@ -1,0 +1,54 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: root
+          port: ${{ secrets.SERVER_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 10m
+          script: |
+            set -e
+
+            # Khởi tạo nvm để nhận lệnh npm, node, pm2
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            echo ">>> Moving to project directory..."
+            cd /opt/BE/portfoliobevinh
+
+            echo ">>> Handling .env tracked conflict..."
+            # Ép bỏ qua thay đổi file .env trên server để tránh lỗi conflict khi git pull
+            git checkout .env || true
+
+            echo ">>> Pulling latest code..."
+            git pull origin main
+
+            echo ">>> Installing dependencies..."
+            # Nếu dùng npm ci bị chậm hoặc lỗi, bạn có thể cân nhắc dùng "npm install" 
+            npm ci
+
+            echo ">>> Generating Prisma Client..."
+            npx prisma generate
+
+            echo ">>> Running DB migrations..."
+            # Lệnh này sẽ chạy các file migration mới vào DB mà không làm mất dữ liệu cũ
+            npx prisma migrate deploy
+
+            echo ">>> Restarting PM2..."
+            # Kiểm tra và khởi động lại app đúng tên 'portfolio-be'
+            pm2 restart portfolio-be || pm2 start server.js --name "portfolio-be"
+            pm2 save
+
+            echo ">>> Deploy completed successfully!"
