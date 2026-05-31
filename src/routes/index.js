@@ -5,6 +5,7 @@ import adminProfileRouter from './adminProfile.route.js';
 import skillRouter from './skill.route.js';
 import experienceRouter from './experience.route.js';
 import contactRouter from './contact.route.js';
+import learnTopicRouter from './learnTopic.route.js';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/api', adminProfileRouter);
 router.use('/api', skillRouter);
 router.use('/api', experienceRouter);
 router.use('/api', contactRouter);
+router.use('/api', learnTopicRouter);
 
 export default router;

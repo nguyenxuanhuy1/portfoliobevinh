@@ -91,3 +91,13 @@ model Contact {
 
   @@map("contacts")
 }
+
+model LearnTopic {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  data      Json     @map("data")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("learn_topics")
+}

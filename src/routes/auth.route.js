@@ -15,10 +15,12 @@ router.get(
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', {
-    session: false,
-    failureRedirect: '/login'
-  }),
+  (req, res, next) => {
+    passport.authenticate('google', {
+      session: false,
+      failureRedirect: `${process.env.BASE_URL_FE}/auth?error=OAuthFailed`
+    })(req, res, next);
+  },
   (req, res) => {
     const user = req.user;
 
