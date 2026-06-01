@@ -18,10 +18,17 @@ ${JSON.stringify(userAnswers, null, 2)}
 Requirements:
 1. Calculate a total_score from 0 to 100 based on overall accuracy (give appropriate weight to all questions: total 32 questions across matching, mcq, fill_with_bank, translate, definition, error_correction, open_ended).
 2. Return a detailed "exercises" array containing grading for each of the exercise types present in the Lesson JSON.
-3. For objective exercises (matching, multiple_choice, fill_with_bank, definition_to_word), check if their answer is correct against the correct "answer" field. Mark "correct" as true or false.
-4. For subjective exercises (translate_to_english, error_correction, open_ended), compare their answer with the suggested correct/suggested answer or keywords, grade it constructively, and mark "correct" as true/false. Be lenient with minor typos or casing.
-5. Provide a helpful, constructive "feedback" string for each individual question, explaining why it is correct or incorrect.
-6. Provide an "overall_feedback" summarizing their performance and offering encouragement.
+3. CRITICAL INSTRUCTION FOR ID & EXERCISE MAPPING:
+   - The "User Answers" is grouped by exercise "type" (e.g. "matching", "multiple_choice", "fill_with_bank", etc.).
+   - Inside each exercise type in "User Answers", the keys in the "answers" object (e.g. "1", "2") correspond exactly to the "id" of the questions in the "questions" array of that SAME exercise type in the "Lesson JSON".
+   - Since question IDs are duplicated across different exercises (e.g. both "matching" and "multiple_choice" have questions starting with ID 1), you MUST strictly isolate your grading of each exercise type.
+   - Do NOT mix up answers or questions from different exercise types.
+   - Check the student's answer for question "id" under a specific exercise type in "User Answers" ONLY against the question with that same "id" in that specific exercise type in "Lesson JSON".
+4. For objective exercises (matching, multiple_choice, fill_with_bank, definition_to_word), check if their answer is correct against the correct "answer" field. Perform a case-insensitive and whitespace-insensitive comparison. For multiple_choice, the student's answer is the option key (e.g. "A", "B"). Compare this key against the option key in the "answer" field. Mark "correct" as true or false.
+5. For subjective exercises (translate_to_english, error_correction, open_ended), compare their answer with the suggested correct/suggested answer or keywords, grade it constructively, and mark "correct" as true/false. Be lenient with minor typos, casing, or contractions (e.g. "don't" vs "do not").
+6. Provide a helpful, constructive "feedback" string for each individual question in Vietnamese language, explaining why it is correct or incorrect. If they left it blank (""), explain that they did not answer and guide them constructively.
+7. Guarantee that the "id" field returned in the questions array matches exactly the question's ID as a number, matching the ID from the Lesson JSON. Do not convert the ID to a string or alter it.
+8. Provide an "overall_feedback" summarizing their performance and offering encouragement in Vietnamese language.
 
 Response JSON format MUST be exactly:
 {
@@ -124,25 +131,25 @@ const localFallbackGrade = (topicData, userAnswers) => {
 
       if (type === 'matching') {
         correctAns = q.answer || ''
-        isCorrect = studentAns.toLowerCase() === correctAns.toLowerCase()
+        isCorrect = studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()
       } else if (type === 'multiple_choice') {
         correctAns = q.answer || ''
-        isCorrect = studentAns.toUpperCase() === correctAns.toUpperCase()
+        isCorrect = studentAns.trim().toUpperCase() === correctAns.trim().toUpperCase()
       } else if (type === 'fill_with_bank') {
         correctAns = q.answer || ''
-        isCorrect = studentAns.toLowerCase() === correctAns.toLowerCase()
+        isCorrect = studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()
       } else if (type === 'definition_to_word') {
         correctAns = q.answer || ''
-        isCorrect = studentAns.toLowerCase() === correctAns.toLowerCase()
+        isCorrect = studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()
       } else if (type === 'translate_to_english') {
         correctAns = q.answer || ''
-        isCorrect = studentAns.toLowerCase() === correctAns.toLowerCase()
+        isCorrect = studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()
       } else if (type === 'error_correction') {
         correctAns = q.correct_sentence || ''
-        isCorrect = studentAns.toLowerCase() === correctAns.toLowerCase()
+        isCorrect = studentAns.trim().toLowerCase() === correctAns.trim().toLowerCase()
       } else if (type === 'open_ended') {
         correctAns = q.suggested_answer || ''
-        isCorrect = studentAns.length > 10 // Simply check if they wrote something reasonable
+        isCorrect = studentAns.trim().length > 10 // Simply check if they wrote something reasonable
       }
 
       if (isCorrect) {
