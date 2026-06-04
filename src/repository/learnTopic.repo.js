@@ -4,7 +4,7 @@ const learnTopicRepo = {
   findAll() {
     return prisma.learnTopic.findMany({
       orderBy: {
-        createdAt: 'asc'
+        createdAt: 'desc'
       }
     })
   },
