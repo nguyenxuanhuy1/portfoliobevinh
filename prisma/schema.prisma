@@ -100,4 +100,22 @@ model LearnTopic {
   updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("learn_topics")
+}
+
+model Document {
+  id            String   @id @default(uuid())
+  subject       String   @map("subject") @db.VarChar(255)
+  title         String   @map("title") @db.VarChar(255)
+  description   String   @map("description") @db.Text
+  level         Int      @default(0) @map("level")
+  downloads     Int      @default(0) @map("downloads")
+  views         Int      @default(0) @map("views")
+  fileType      String   @map("file_type") @db.VarChar(50)
+  fileSize      String   @map("file_size") @db.VarChar(50)
+  tags          String[] @map("tags")
+  mdDownloadUrl String   @map("md_download_url") @db.VarChar(500)
+  downloadUrl   String   @map("download_url") @db.VarChar(500)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("documents")
 }

@@ -1,0 +1,12 @@
+{
+  "ignore": [
+    "kaggle_dataset",
+    "kaggle_kernel",
+    "temp_uploads",
+    "temp_outputs_*",
+    "**/kaggle_dataset/**",
+    "**/kaggle_kernel/**",
+    "**/temp_uploads/**",
+    "**/temp_outputs_*/**"
+  ]
+}

@@ -4,3 +4,8 @@ node_modules
 /src/generated/prisma
 .env
 .env*
+
+# Kaggle Pipeline Temp Files
+/temp_uploads/
+/temp_outputs_*/
+/kaggle_kernel/notebook.ipynb
