@@ -114,8 +114,8 @@ model Document {
   fileSize      String   @map("file_size") @db.VarChar(50)
   tags          String[] @map("tags")
   mdDownloadUrl String   @map("md_download_url") @db.VarChar(500)
-  downloadUrl   String   @map("download_url") @db.VarChar(500)
+  downloadUrl   String[] @map("download_url")
   createdAt     DateTime @default(now()) @map("created_at")
 
   @@map("documents")
-}
+}

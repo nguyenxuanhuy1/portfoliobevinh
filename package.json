@@ -23,6 +23,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pdf-lib": "^1.17.1",
     "prisma": "^5.22.0"
   },
   "devDependencies": {

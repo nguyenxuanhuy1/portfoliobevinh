@@ -7,6 +7,10 @@
     "**/kaggle_dataset/**",
     "**/kaggle_kernel/**",
     "**/temp_uploads/**",
-    "**/temp_outputs_*/**"
+    "**/temp_outputs_*/**",
+    "**/*.pdf",
+    "**/*.md",
+    "**/*.log",
+    "**/*.zip"
   ]
 }

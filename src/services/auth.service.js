@@ -26,7 +26,8 @@ const refreshTokenFcn = async (rfToken) => {
 
         return {
             accessToken,
-            refreshToken: newRefreshToken
+            refreshToken: newRefreshToken,
+            role: decoded.role
         };
     } catch (error) {
         if (error.name === 'TokenExpiredError') {

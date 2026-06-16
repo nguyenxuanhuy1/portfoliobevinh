@@ -48,7 +48,9 @@ const congDongOnThiRepo = {
   countByDownloadUrlExceptId(downloadUrl, id) {
     return prisma.document.count({
       where: {
-        downloadUrl,
+        downloadUrl: {
+          hasSome: downloadUrl
+        },
         id: { not: id }
       }
     });
