@@ -4,13 +4,21 @@ import { sendSuccess, sendError } from '../utils/response.js';
 
 const uploadDocument = async (req, res) => {
   try {
-    if (!req.file) {
+    const documentFiles = req.files && req.files['document'];
+    const mdFiles = req.files && req.files['mdFile'];
+
+    if (!documentFiles || documentFiles.length === 0) {
       return sendError(res, 'No file uploaded.', 400);
     }
 
-    const { path: filePath, originalname: originalName } = req.file;
+    const docFile = documentFiles[0];
+    const { path: filePath, originalname: originalName } = docFile;
+    const mdFilePath = mdFiles && mdFiles.length > 0 ? mdFiles[0].path : null;
 
     console.log(`[CongDongOnThi Controller] Received upload request for file: "${originalName}"`);
+    if (mdFilePath) {
+      console.log(`[CongDongOnThi Controller] Received manual MD file: "${mdFiles[0].originalname}"`);
+    }
 
     // Parse metadata fields with fallbacks
     const subject = req.body.subject || 'general';
@@ -36,7 +44,7 @@ const uploadDocument = async (req, res) => {
     const ext = path.extname(originalName).replace('.', '').toUpperCase();
     const fileType = req.body.fileType || ext || 'PDF';
 
-    const sizeInMB = (req.file.size / (1024 * 1024)).toFixed(1) + ' MB';
+    const sizeInMB = (docFile.size / (1024 * 1024)).toFixed(1) + ' MB';
     const fileSize = req.body.fileSize || sizeInMB;
 
     const metadata = {
@@ -49,8 +57,8 @@ const uploadDocument = async (req, res) => {
       fileSize
     };
 
-    // Trigger asynchronous conversion pipeline
-    congDongOnThiService.runPipeline(filePath, originalName, metadata)
+    // Trigger asynchronous conversion pipeline (now only doing Cloudinary and DB persistence)
+    congDongOnThiService.runPipeline(filePath, originalName, metadata, mdFilePath)
       .then(results => {
         console.log(`[CongDongOnThi Controller] Pipeline processing completed for: "${originalName}"`);
       })
@@ -93,7 +101,18 @@ const getDocumentById = async (req, res) => {
 
 const updateDocumentInfo = async (req, res) => {
   try {
-    const doc = await congDongOnThiService.update(req.params.id, req.body);
+    const id = req.params.id;
+    const updateData = { ...req.body };
+
+    const documentFiles = req.files && req.files['document'];
+    const mdFiles = req.files && req.files['mdFile'];
+
+    const documentFilePath = documentFiles && documentFiles.length > 0 ? documentFiles[0].path : null;
+    const mdFilePath = mdFiles && mdFiles.length > 0 ? mdFiles[0].path : null;
+    const originalName = documentFiles && documentFiles.length > 0 ? documentFiles[0].originalname : null;
+
+    const doc = await congDongOnThiService.updateWithFiles(id, updateData, documentFilePath, mdFilePath, originalName);
+
     if (!doc) {
       return sendError(res, 'Không tìm thấy tài liệu để cập nhật.', 404);
     }

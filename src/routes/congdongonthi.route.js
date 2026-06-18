@@ -34,7 +34,10 @@ router.post(
   '/congdongonthi/upload',
   tokenValidate,
   roleValidate,
-  upload.single('document'),
+  upload.fields([
+    { name: 'document', maxCount: 1 },
+    { name: 'mdFile', maxCount: 1 }
+  ]),
   congDongOnThiController.uploadDocument
 );
 
@@ -61,6 +64,10 @@ router.post(
   '/congdongonthi/:id',
   tokenValidate,
   roleValidate,
+  upload.fields([
+    { name: 'document', maxCount: 1 },
+    { name: 'mdFile', maxCount: 1 }
+  ]),
   congDongOnThiController.updateDocumentInfo
 );
 
