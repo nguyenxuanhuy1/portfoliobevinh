@@ -11,7 +11,7 @@ CREATE TABLE "documents" (
     "file_size" VARCHAR(50) NOT NULL,
     "tags" TEXT[],
     "md_download_url" VARCHAR(500) NOT NULL,
-    "download_url" VARCHAR(500) NOT NULL,
+    "download_url" TEXT[] NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "documents_pkey" PRIMARY KEY ("id")
